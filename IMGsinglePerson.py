@@ -52,7 +52,7 @@ def draw_connections(frame, keypoints, edges, confidence_threshold):
         if (c1 > confidence_threshold) & (c2 > confidence_threshold):      
             cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0,0,255), 2)
 
-frame = cv2.imread('video/single.jpg')
+frame = cv2.imread('video/person2.jpeg')
 
 # Reshape image
 img = frame.copy()

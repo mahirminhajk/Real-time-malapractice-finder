@@ -120,11 +120,19 @@ def find_head_postion(frame, keypoints, confidence_threshold=0.1):
     y, x, c = frame.shape
     shaped = np.squeeze(np.multiply(keypoints, [y,x,1]))
 
-    _, lex, le_conf = shaped[1]
-    _, rex, re_conf = shaped[2]
+    ley, lex, le_conf = shaped[1]
+    rey, rex, re_conf = shaped[2]
 
-    _, leax, lea_conf = shaped[3]
-    _, reax, rea_conf = shaped[4]
+    leay, leax, lea_conf = shaped[3]
+    reay, reax, rea_conf = shaped[4]
+
+    #? looking down
+    if le_conf > confidence_threshold and re_conf > confidence_threshold and lea_conf > confidence_threshold and rea_conf > confidence_threshold:
+        rdDiff = round(reay - rey  , 1)
+        lDiff = round(leay - ley, 1)
+        if rdDiff < -18 and lDiff < -18:
+            cv2.putText(frame, "D", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+
 
     #? right
     if re_conf > confidence_threshold and rea_conf > confidence_threshold:
@@ -154,9 +162,9 @@ def find_head_postion(frame, keypoints, confidence_threshold=0.1):
 
 
 
-# cap = cv2.VideoCapture(0)
-# cap = cv2.VideoCapture('video/single_person_project_video.mp4')
-cap = cv2.VideoCapture(0)
+
+cap = cv2.VideoCapture('video/single_person_project_video.mp4')
+#cap = cv2.VideoCapture(0)
 while cap.isOpened():
     ret, frame = cap.read()
     
