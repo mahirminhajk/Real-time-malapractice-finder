@@ -3,12 +3,21 @@ import numpy as np
 from matplotlib import pyplot as plt
 import cv2
 import os
+import time
+import websocket
 
 # to ignore the warning messages
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 interpreter = tf.lite.Interpreter(model_path='lite-model_movenet_singlepose_lightning_3.tflite')
 interpreter.allocate_tensors()
+
+#* find continously looking direction using time
+#? Add a dictionary to store the duration the object has been looking in each direction
+direction_timers = {'D':0, 'L':0, 'R':0}
+#? Add a dictionary to store the threshold for each direction
+direction_thresholds = {'D':40, 'L':40, 'R':40}
+
 
 def draw_keypoints(frame, keypoints, confidence_threshold):
     y, x, c = frame.shape
@@ -132,6 +141,9 @@ def find_head_postion(frame, keypoints, confidence_threshold=0.1):
         lDiff = round(leay - ley, 1)
         if rdDiff < -18 and lDiff < -18:
             cv2.putText(frame, "D", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            direction_timers['D'] += 1
+        else:
+            direction_timers['D'] = 0
 
 
     #? right
@@ -141,14 +153,25 @@ def find_head_postion(frame, keypoints, confidence_threshold=0.1):
           # head position in right
         if rDiff < 5:
             cv2.putText(frame, "R", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            direction_timers['R'] += 1
+        else:
+            direction_timers['R'] = 0
 
     #? left
     if le_conf > confidence_threshold and lea_conf > confidence_threshold:
         # left eye and left ear difference
         lDiff = round(lex - leax, 1)
          # head position in left
+       # head position in left
         if lDiff > 5:
             cv2.putText(frame, "L", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            direction_timers['L'] += 1
+        else:
+            direction_timers['L'] = 0
+
+    for direction, timer in direction_timers.items():
+        if timer >= direction_thresholds[direction]:
+            print(f"Person is looking {direction}")
 
   
    
