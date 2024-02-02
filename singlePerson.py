@@ -3,8 +3,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 import cv2
 import os
-import time
-import websocket
 
 # to ignore the warning messages
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -17,7 +15,6 @@ interpreter.allocate_tensors()
 direction_timers = {'D':0, 'L':0, 'R':0}
 #? Add a dictionary to store the threshold for each direction
 direction_thresholds = {'D':40, 'L':40, 'R':40}
-
 
 def draw_keypoints(frame, keypoints, confidence_threshold):
     y, x, c = frame.shape
@@ -171,20 +168,10 @@ def find_head_postion(frame, keypoints, confidence_threshold=0.1):
 
     for direction, timer in direction_timers.items():
         if timer >= direction_thresholds[direction]:
-            print(f"Person is looking {direction}")
+            message = f"Person is looking {direction}"
+            print(message)
 
   
-   
-        
-    
-
-
-
-
-
-
-
-
 
 cap = cv2.VideoCapture('video/single_person_project_video.mp4')
 #cap = cv2.VideoCapture(0)

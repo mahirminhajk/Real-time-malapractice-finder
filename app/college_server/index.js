@@ -1,24 +1,32 @@
-import WebSocket from 'ws';
-import express from 'express' // For serving static files
+import WebSocket, { WebSocketServer } from 'ws';
 
-const app = express();
-const server = express();
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocketServer({ port: 8080 });
 
-// Serve static files from the 'public' directory
-app.use(express.static('public'));
+const clients = new Set();
 
 wss.on('connection', (ws) => {
+    console.log('Client connected');
+
+    // Add the new client to the set
+    clients.add(ws);
+
     ws.on('message', (message) => {
-        console.log('Received message:', message);
-        wss.clients.forEach((client) => {
+        console.log(`Received message => ${message}`);
+
+        // Broadcast the message to all connected clients
+        clients.forEach((client) => {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
-                client.send(message); // Broadcast message to all connected clients
+                // Send the message to the client if it's not the original sender
+                // client.send(JSON.stringify({ message: message.toString() }));
+                client.send(message.toString());
             }
         });
     });
-});
 
-server.listen(3000, () => {
-    console.log('Server listening on port 3000');
+    ws.on('close', () => {
+        console.log('Client disconnected');
+
+        // Remove the client from the set upon disconnection
+        clients.delete(ws);
+    });
 });
