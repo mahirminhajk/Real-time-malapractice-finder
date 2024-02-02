@@ -3,6 +3,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 import cv2
 import os
+# websocket
+import websocket
+import json
 
 # to ignore the warning messages
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -15,6 +18,14 @@ interpreter.allocate_tensors()
 direction_timers = {'D':0, 'L':0, 'R':0}
 #? Add a dictionary to store the threshold for each direction
 direction_thresholds = {'D':40, 'L':40, 'R':40}
+
+# connect to the websocket server
+ws = websocket.WebSocket()
+ws.connect("ws://localhost:8080/ws")
+connectionMessageSent = False
+# send a message to the server
+def send_message_to_websocket(message):
+    ws.send(json.dumps(message))
 
 def draw_keypoints(frame, keypoints, confidence_threshold):
     y, x, c = frame.shape
@@ -168,7 +179,12 @@ def find_head_postion(frame, keypoints, confidence_threshold=0.1):
 
     for direction, timer in direction_timers.items():
         if timer >= direction_thresholds[direction]:
-            message = f"Person is looking {direction}"
+            content = f"Person is looking {direction}"
+            message = {
+                "type": "message",
+                "content": content
+            }
+            send_message_to_websocket(message)
             print(message)
 
   
@@ -176,6 +192,15 @@ def find_head_postion(frame, keypoints, confidence_threshold=0.1):
 cap = cv2.VideoCapture('video/single_person_project_video.mp4')
 #cap = cv2.VideoCapture(0)
 while cap.isOpened():
+
+    # send a connection message to the server
+    if not connectionMessageSent:
+        message = {
+            "type": "connection",
+        }
+        send_message_to_websocket(message)
+        connectionMessageSent = True
+
     ret, frame = cap.read()
     
     # Reshape image
@@ -203,9 +228,23 @@ while cap.isOpened():
     
     cv2.imshow('MoveNet Lightning', frame)
     
+    # Check if the video is finished
+    if cap.get(cv2.CAP_PROP_POS_FRAMES) == cap.get(cv2.CAP_PROP_FRAME_COUNT):
+        # Video is finished, send disconnect message
+        message = {
+            "type": "disconnect",
+        }
+        send_message_to_websocket(message)
+        break
+
     if cv2.waitKey(10) & 0xFF==ord('q'):
         break
         
+# send a disconnect message to the server
+message = {
+    "type": "disconnect",
+}
+send_message_to_websocket(message)
 cap.release()
 cv2.destroyAllWindows()
 
