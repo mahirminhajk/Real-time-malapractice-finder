@@ -6,6 +6,8 @@ import os
 # websocket
 import websocket
 import json
+#image
+import base64
 
 # to ignore the warning messages
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -18,6 +20,8 @@ interpreter.allocate_tensors()
 direction_timers = {'D':0, 'L':0, 'R':0}
 #? Add a dictionary to store the threshold for each direction
 direction_thresholds = {'D':40, 'L':40, 'R':40}
+#? image sending optimization
+lastDirectionImgSend = 'Hello'
 
 # connect to the websocket server
 ws = websocket.WebSocket()
@@ -25,6 +29,15 @@ ws.connect("ws://localhost:8080/ws")
 connectionMessageSent = False
 # send a message to the server
 def send_message_to_websocket(message):
+    ws.send(json.dumps(message))
+# send the mesage and image to the server
+def send_message_with_image_to_websocket(message, image):
+    # Encode the img as base64
+    _, img_encoded = cv2.imencode('.png', image)
+    img_base64 = base64.b64encode(img_encoded)
+    # Include the image in the message
+    message['image'] = img_base64.decode('utf-8')
+    # Send the message
     ws.send(json.dumps(message))
 
 def draw_keypoints(frame, keypoints, confidence_threshold):
@@ -134,6 +147,7 @@ def find_direction(frame, keypoints, confidence_threshold=0.4):
 
 #? fun to find person looking right or left
 def find_head_postion(frame, keypoints, confidence_threshold=0.1):
+    global lastDirectionImgSend
     y, x, c = frame.shape
     shaped = np.squeeze(np.multiply(keypoints, [y,x,1]))
 
@@ -179,13 +193,21 @@ def find_head_postion(frame, keypoints, confidence_threshold=0.1):
 
     for direction, timer in direction_timers.items():
         if timer >= direction_thresholds[direction]:
-            content = f"Person is looking {direction}"
+            if(direction == 'D'):
+                content = f"Student is looking down"
+            elif(direction == 'L'):
+                content = f"Student is looking left"
+            elif(direction == 'R'):
+                content = f"Student is looking right"
             message = {
                 "type": "message",
                 "content": content
             }
-            send_message_to_websocket(message)
-            print(message)
+            if direction != lastDirectionImgSend:
+                send_message_with_image_to_websocket(message, frame)
+                lastDirectionImgSend = direction
+            else:
+                send_message_to_websocket(message)
 
   
 

@@ -5,6 +5,29 @@
     padding: 20px;
 }
 
+.heading {
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.heading h2 {
+    margin: 0;
+    font-size: larger;
+}
+
+.heading p {
+    margin: 0;
+    font-size: medium;
+}
+
+.mute {
+    display: flex;
+    justify-content: end;
+    padding: 5px;
+}
+
 /* Status styling */
 .status {
     display: flex;
@@ -71,6 +94,14 @@ li.highlight {
 /* Responsive design */
 @media screen and (max-width: 600px) {
     li {
+        font-size: 14px;
+    }
+
+    .heading h2 {
+        font-size: 20px;
+    }
+
+    .heading p {
         font-size: 14px;
     }
 }

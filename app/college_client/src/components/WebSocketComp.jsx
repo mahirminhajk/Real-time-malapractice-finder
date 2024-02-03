@@ -2,14 +2,23 @@ import { useEffect, useState } from 'react'
 import useWebSocket from 'react-use-websocket'
 import './WebSocketComp.css'
 
+//* audio
+import alert2 from '../audio/alert2.mp3'
+
+//* icons
+import { IoVolumeMute } from "react-icons/io5";
+import { IoVolumeHigh } from "react-icons/io5";
+
 function WebSocketComp() {
 
     const socketUrl = 'ws://localhost:8080/ws'
     const [messages, setMessages] = useState([]);
     const [connectionStatus, setConnectionStatus] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
+    const [imageData, setImageData] = useState(null);
 
 
-    const { sendJsonMessage, lastMessage, readyState } = useWebSocket(
+    const { lastMessage } = useWebSocket(
         socketUrl,
         {
             share: true,
@@ -27,7 +36,17 @@ function WebSocketComp() {
             } else if (parsedData.type === 'message') {
                 const newMessages = [...messages, { content: parsedData.content, timestamp: new Date() }];
                 setMessages(newMessages.slice(-8)); // Keep only the last 8 messages
+
+                //* image
+                if (parsedData.image) {
+                    setImageData(`data:image/png;base64,${parsedData.image}`);
+                }
+
                 if (connectionStatus === false) setConnectionStatus(true);
+                if (!isMuted) {
+                    const alertAudio = new Audio(alert2);
+                    alertAudio.play();
+                }
             } else {
                 setConnectionStatus(false);
             }
@@ -36,10 +55,19 @@ function WebSocketComp() {
 
     return (
         <div className='container'>
+            <div className='heading'>
+                <h2>SecureExam</h2>
+                <p>Real-time Malpractice Detection System</p>
+            </div>
+            <div className='mute'>
+                {isMuted ? <IoVolumeMute size='2em' onClick={() => setIsMuted(false)} /> : <IoVolumeHigh size='2em' onClick={() => setIsMuted(true)} />}
+            </div>
             <div className='status'>
                 <div className={`status-circle ${connectionStatus ? 'status-circle-online' : 'status-circle-offline'}`}></div>
                 <div className={`status-text ${connectionStatus ? 'status-text-online' : 'status-text-offline'}`}>{connectionStatus ? 'Online' : 'Offline'}</div>
             </div>
+            {/* Display image if available */}
+            {imageData && <img src={imageData} alt="Person detected" width="300px" />}
             <ul>
                 {messages.slice().reverse().map((msg, index) => (
                     <li key={index} className={index === 0 ? 'highlight' : ''}>
@@ -47,6 +75,7 @@ function WebSocketComp() {
                     </li>
                 ))}
             </ul>
+
         </div>
     );
 }

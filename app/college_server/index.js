@@ -1,4 +1,5 @@
 import WebSocket, { WebSocketServer } from 'ws';
+import fs from 'fs';
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -19,6 +20,7 @@ wss.on('connection', (ws) => {
                 // Send the message to the client if it's not the original sender
                 // client.send(JSON.stringify({ message: message.toString() }));
                 client.send(message.toString());
+                // client.send(message);
             }
         });
     });
