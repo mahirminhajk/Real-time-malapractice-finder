@@ -72,6 +72,14 @@
     color: red;
 }
 
+.img-and-list {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 20px;
+
+}
+
 /* Message list styling */
 ul {
     list-style-type: none;
@@ -103,5 +111,9 @@ li.highlight {
 
     .heading p {
         font-size: 14px;
+    }
+
+    .img-and-list {
+        flex-direction: column;
     }
 }

@@ -8,6 +8,8 @@ import alert2 from '../audio/alert2.mp3'
 //* icons
 import { IoVolumeMute } from "react-icons/io5";
 import { IoVolumeHigh } from "react-icons/io5";
+import { MdImageNotSupported } from "react-icons/md"
+import { MdImage } from "react-icons/md";
 
 function WebSocketComp() {
 
@@ -15,7 +17,9 @@ function WebSocketComp() {
     const [messages, setMessages] = useState([]);
     const [connectionStatus, setConnectionStatus] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
+    const [isImageShown, setIsImageShown] = useState(true);
     const [imageData, setImageData] = useState(null);
+    const [audio, setAudio] = useState(null);
 
 
     const { lastMessage } = useWebSocket(
@@ -43,8 +47,9 @@ function WebSocketComp() {
                 }
 
                 if (connectionStatus === false) setConnectionStatus(true);
-                if (!isMuted) {
+                if (!isMuted && (!audio || audio.ended)) {
                     const alertAudio = new Audio(alert2);
+                    setAudio(alertAudio);
                     alertAudio.play();
                 }
             } else {
@@ -59,22 +64,35 @@ function WebSocketComp() {
                 <h2>SecureExam</h2>
                 <p>Real-time Malpractice Detection System</p>
             </div>
+
             <div className='mute'>
+                {isImageShown ? <MdImage size='2em' onClick={() => setIsImageShown(false)} /> : <MdImageNotSupported size='2em' onClick={() => setIsImageShown(true)} />}
+
                 {isMuted ? <IoVolumeMute size='2em' onClick={() => setIsMuted(false)} /> : <IoVolumeHigh size='2em' onClick={() => setIsMuted(true)} />}
+
             </div>
             <div className='status'>
                 <div className={`status-circle ${connectionStatus ? 'status-circle-online' : 'status-circle-offline'}`}></div>
                 <div className={`status-text ${connectionStatus ? 'status-text-online' : 'status-text-offline'}`}>{connectionStatus ? 'Online' : 'Offline'}</div>
             </div>
             {/* Display image if available */}
-            {imageData && <img src={imageData} alt="Person detected" width="300px" />}
-            <ul>
-                {messages.slice().reverse().map((msg, index) => (
-                    <li key={index} className={index === 0 ? 'highlight' : ''}>
-                        {msg.timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })} : {msg.content}
-                    </li>
-                ))}
-            </ul>
+            {isImageShown ? <div className='img-and-list'>
+                {imageData && <img src={imageData} alt="Person detected" width="300px" />}
+                <ul>
+                    {messages.slice().reverse().map((msg, index) => (
+                        <li key={index} className={index === 0 ? 'highlight' : ''}>
+                            {msg.timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })} : {msg.content}
+                        </li>
+                    ))}
+                </ul>
+            </div> :
+                <ul>
+                    {messages.slice().reverse().map((msg, index) => (
+                        <li key={index} className={index === 0 ? 'highlight' : ''}>
+                            {msg.timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })} : {msg.content}
+                        </li>
+                    ))}
+                </ul>}
 
         </div>
     );

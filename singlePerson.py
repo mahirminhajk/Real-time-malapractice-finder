@@ -211,8 +211,8 @@ def find_head_postion(frame, keypoints, confidence_threshold=0.1):
 
   
 
-cap = cv2.VideoCapture('video/single_person_project_video.mp4')
-#cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture('video/single_person_project_video.mp4')
+cap = cv2.VideoCapture(0)
 while cap.isOpened():
 
     # send a connection message to the server
