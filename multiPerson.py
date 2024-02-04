@@ -18,7 +18,8 @@ model = hub.load("https://tfhub.dev/google/movenet/multipose/lightning/1")
 movenet = model.signatures['serving_default']
 
 # Load the video
-cap = cv2.VideoCapture('video/project_test_video.mp4')
+# cap = cv2.VideoCapture('video/project_test_video.mp4')
+cap = cv2.VideoCapture(0)
 
 def draw_keypoints(frame, keypoints, confidence_threshold):
     y, x, c = frame.shape
