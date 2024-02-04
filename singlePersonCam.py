@@ -3,6 +3,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 import cv2
 import os
+# websocket
+import websocket
+import json
+#image
+import base64
 
 
 # to ignore the warning messages
@@ -19,6 +24,22 @@ direction_thresholds = {'D':40, 'L':40, 'R':40}
 #? image sending optimization
 lastDirectionImgSend = 'Hello'
 
+# connect to the websocket server
+ws = websocket.WebSocket()
+ws.connect("ws://localhost:8080/ws")
+connectionMessageSent = False
+# send a message to the server
+def send_message_to_websocket(message):
+    ws.send(json.dumps(message))
+# send the mesage and image to the server
+def send_message_with_image_to_websocket(message, image):
+    # Encode the img as base64
+    _, img_encoded = cv2.imencode('.png', image)
+    img_base64 = base64.b64encode(img_encoded)
+    # Include the image in the message
+    message['image'] = img_base64.decode('utf-8')
+    # Send the message
+    ws.send(json.dumps(message))
 
 def draw_keypoints(frame, keypoints, confidence_threshold):
     y, x, c = frame.shape
@@ -179,13 +200,30 @@ def find_head_postion(frame, keypoints, confidence_threshold=0.1):
                 content = f"Student is looking left"
             elif(direction == 'R'):
                 content = f"Student is looking right"
-            print(content)
+            message = {
+                "type": "message",
+                "content": content
+            }
+            if direction != lastDirectionImgSend:
+                send_message_with_image_to_websocket(message, frame)
+                lastDirectionImgSend = direction
+            else:
+                send_message_to_websocket(message)
 
   
 
 # cap = cv2.VideoCapture('video/single_person_project_video.mp4')
 cap = cv2.VideoCapture(0)
 while cap.isOpened():
+
+    # send a connection message to the server
+    if not connectionMessageSent:
+        message = {
+            "type": "connection",
+        }
+        send_message_to_websocket(message)
+        connectionMessageSent = True
+
     ret, frame = cap.read()
     
     # Reshape image
@@ -213,17 +251,14 @@ while cap.isOpened():
     
     cv2.imshow('MoveNet Lightning', frame)
     
-    # Check if the video is finished
-    if cap.get(cv2.CAP_PROP_POS_FRAMES) == cap.get(cv2.CAP_PROP_FRAME_COUNT):
-        # Video is finished, send disconnect message
-        message = {
-            "type": "disconnect",
-        }
-
     if cv2.waitKey(10) & 0xFF==ord('q'):
         break
         
 # send a disconnect message to the server
+message = {
+    "type": "disconnect",
+}
+send_message_to_websocket(message)
 cap.release()
 cv2.destroyAllWindows()
 
