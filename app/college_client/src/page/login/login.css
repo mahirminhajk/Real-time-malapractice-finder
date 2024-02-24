@@ -1,0 +1,88 @@
+/* Login.css */
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    background-color: #292b2c;
+    /* Dark background color */
+}
+
+.login-form {
+    background-color: #32383e;
+    /* Darker form background color */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+}
+
+.login-form h1 {
+    color: #ffffff;
+    /* White text color */
+    font-size: 2rem;
+    margin: 0;
+    text-align: center;
+}
+
+.login-form p {
+    color: #ffffff;
+    margin: 0px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-header {
+    margin-bottom: 15px;
+}
+
+.form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #555;
+    /* Darker border color */
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #555;
+    /* Darker text color */
+    background-color: #fff;
+    /* Lighter background color */
+}
+
+.form input[type="submit"] {
+    background-color: #28a745;
+    /* Green submit button color */
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.form input[type="submit"]:hover {
+    background-color: #218838;
+    /* Darker green on hover */
+}
+
+.error-message {
+    color: #dc3545;
+    /* Red error message color */
+    margin-top: 10px;
+    text-align: center;
+}
+
+.loading-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffffff;
+    /* White text color */
+}
+
+/* Media query for responsiveness */
+@media (max-width: 768px) {
+    .login-form {
+        width: 80%;
+    }
+}

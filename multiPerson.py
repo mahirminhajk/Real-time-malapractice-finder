@@ -144,8 +144,8 @@ def loop_through_people(frame, keypoints_with_scores, edges, confidence_threshol
     for person_id, person in enumerate(keypoints_with_scores):
         if(person_id == 0):
             draw_person_id(frame, person, confidence_threshold, person_id)
-            # draw_keypoints(frame, person, confidence_threshold, person_id)
-            # draw_connections(frame, person, edges, confidence_threshold)
+            draw_keypoints(frame, person, confidence_threshold, person_id)
+            draw_connections(frame, person, edges, confidence_threshold)
             find_head_postion(frame, person, confidence_threshold)
 
 while cap.isOpened():

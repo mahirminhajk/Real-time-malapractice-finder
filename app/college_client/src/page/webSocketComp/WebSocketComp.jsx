@@ -3,13 +3,16 @@ import useWebSocket from 'react-use-websocket'
 import './WebSocketComp.css'
 
 //* audio
-import alert2 from '../audio/alert2.mp3'
+import alert2 from '../../audio/alert2.mp3'
 
 //* icons
-import { IoVolumeMute } from "react-icons/io5";
-import { IoVolumeHigh } from "react-icons/io5";
-import { MdImageNotSupported } from "react-icons/md"
-import { MdImage } from "react-icons/md";
+// import { IoVolumeMute } from "react-icons/io5";
+// import { IoVolumeHigh } from "react-icons/io5";
+// import { MdImageNotSupported } from "react-icons/md"
+// import { MdImage } from "react-icons/md";
+import { IoVolumeMute, IoVolumeHigh } from 'react-icons/io5'
+import { MdImageNotSupported, MdImage } from 'react-icons/md'
+
 
 function WebSocketComp() {
 
@@ -60,11 +63,6 @@ function WebSocketComp() {
 
     return (
         <div className='container'>
-            <div className='heading'>
-                <h2>SecureExam</h2>
-                <p>Real-time Malpractice Detection System</p>
-            </div>
-
             <div className='mute'>
                 {isImageShown ? <MdImage size='2em' onClick={() => setIsImageShown(false)} /> : <MdImageNotSupported size='2em' onClick={() => setIsImageShown(true)} />}
 

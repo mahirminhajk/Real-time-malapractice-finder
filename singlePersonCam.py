@@ -20,7 +20,8 @@ interpreter.allocate_tensors()
 #? Add a dictionary to store the duration the object has been looking in each direction
 direction_timers = {'D':0, 'L':0, 'R':0}
 #? Add a dictionary to store the threshold for each direction
-direction_thresholds = {'D':40, 'L':40, 'R':40}
+# direction_thresholds = {'D':40, 'L':40, 'R':40}
+direction_thresholds = {'D':10, 'L':10, 'R':10}
 #? image sending optimization
 lastDirectionImgSend = 'Hello'
 
