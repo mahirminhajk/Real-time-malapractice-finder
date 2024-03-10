@@ -1,5 +1,5 @@
 import axios from "axios"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import './alert.css'
 
 
@@ -7,6 +7,7 @@ function Alert() {
 
     const [alertData, setAlertData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
     const getAlerts = async () => {
         try {
@@ -21,7 +22,15 @@ function Alert() {
         setLoading(false);
     }
 
-    const handleDeleteAllAlerts = async () => {
+    useEffect(() => {
+        getAlerts();
+    }, []);
+
+    const handleDeleteAllAlerts = () => {
+        setShowConfirmation(true);
+    }
+
+    const confirmDeleteAllAlerts = async () => {
         try {
             setLoading(true);
             await axios.delete('http://localhost:3000/api/alert');
@@ -29,9 +38,15 @@ function Alert() {
             setLoading(false);
         } catch (error) {
             console.error(error);
+            setLoading(false);
         }
-        setLoading(false);
+        setShowConfirmation(false);
     }
+
+    const cancelDeleteAllAlerts = () => {
+        setShowConfirmation(false);
+    }
+
 
 
     return (
@@ -41,15 +56,24 @@ function Alert() {
             {!loading && alertData.length === 0 && <p>No alerts available.</p>}
             {!loading && alertData.length > 0 && (
                 <>
+                    <div className="content-container">
+                        {alertData.map((alert) => (
+                            <div key={alert._id} className="alert-card">
+                                <img src={`data:image/png;base64,${alert.image}`} alt="Person detected" width="300px" />
+                                <p className="alert-timestamp">{new Date(alert.timestamp).toLocaleString()}</p>
+                            </div>
+                        ))}
+                    </div>
                     <div className="alert-actions">
                         <button onClick={handleDeleteAllAlerts}>Delete All Alerts</button>
                     </div>
-                    {alertData.map((alert) => (
-                        <div key={alert._id} className="alert-card">
-                            <p className="alert-timestamp">{new Date(alert.timestamp).toLocaleString()}</p>
-                            <p className="alert-content">{alert.content}</p>
+                    {showConfirmation && (
+                        <div className="confirmation-popup">
+                            <p>Are you sure you want to delete all alerts?</p>
+                            <button onClick={confirmDeleteAllAlerts}>Yes</button>
+                            <button onClick={cancelDeleteAllAlerts}>No</button>
                         </div>
-                    ))}
+                    )}
                 </>
             )}
         </div>

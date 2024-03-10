@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const alertSchema = new mongoose.Schema({
-    content: {
+    image: {
         type: String,
     },
     timestamp: {

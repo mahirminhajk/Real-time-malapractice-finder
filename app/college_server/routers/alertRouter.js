@@ -14,16 +14,11 @@ router.get('/test', (req, res) => {
 });
 
 //* get all alerts
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     try {
 
-        Alert.find().exec((err, data) => {
-            if (err) {
-                res.status(500).json({ message: err.message });
-            } else {
-                res.status(200).json(data);
-            }
-        });
+        const alerts = await Alert.find();
+        res.status(200).json(alerts);
 
     } catch (error) {
         console.log(error);
@@ -31,15 +26,10 @@ router.get('/', (req, res) => {
 });
 
 //* delete all alerts
-router.delete('/', (req, res) => {
+router.delete('/', async (req, res) => {
     try {
-        Alert.deleteMany({}, (err) => {
-            if (err) {
-                res.status(500).json({ message: err.message });
-            } else {
-                res.status(200).json({ message: 'All alerts deleted' });
-            }
-        });
+        await Alert.deleteMany();
+        res.status(200).json({ message: "All alerts deleted successfully" });
 
     } catch (error) {
         console.log(error);

@@ -21,6 +21,7 @@ const app = express();
 //* routers
 import authRouter from './routers/authRouter.js';
 import alertRouter from './routers/alertRouter.js';
+import Alert from './models/Alert.js';
 
 const clients = new Set();
 
@@ -33,7 +34,7 @@ wss.on('connection', (ws) => {
     clients.add(ws);
 
     ws.on('message', (message) => {
-        console.log(`Received message => ${message}`);
+        // console.log(`Received message => ${message}`);
 
         // Broadcast the message to all connected clients
         clients.forEach((client) => {
@@ -41,6 +42,28 @@ wss.on('connection', (ws) => {
                 // Send the message to the client if it's not the original sender
                 // client.send(JSON.stringify({ message: message.toString() }));
                 client.send(message.toString());
+
+                const messageJSON = JSON.parse(message);
+
+                //* if message have a image
+                if (messageJSON.image) {
+                    const alert = new Alert({
+                        image: messageJSON.image,
+                    });
+
+                    alert.save()
+                        .then((result) => {
+                            console.log("image saved!");
+                        })
+                        .catch((error) => {
+                            console.error("error saving image!" + error);
+                        });
+
+
+
+
+                }
+
 
                 // client.send(message);
             }
@@ -69,9 +92,9 @@ app.use(cookieParser());
 app.use(helmet());
 //* cors
 app.use(cors({
-    origin: "*",
+    origin: "http://localhost:5173",
     credentials: true,
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 
 

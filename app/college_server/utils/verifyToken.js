@@ -10,7 +10,7 @@ export const verifyToken = (req, res, next) => {
     console.log(req.cookies)
 
     const token = req.cookies.access_token
-    if (!token) return next(createErr(401, "Access denied"))
+    if (!token) return next(new Error('Access denied'));
 
     //* verify token
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {

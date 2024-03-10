@@ -19,7 +19,10 @@ function Login() {
         e.preventDefault(); // Fix: Add e.preventDefault()
         try {
             dispatch({ type: "LOGIN_START" });
-            const res = await axios.post("http://localhost:3000/api/auth/login", user);
+            //* create axios post request withCredentials true
+            const axiosInstance = axios.create({ withCredentials: true });
+
+            const res = await axiosInstance.post("http://localhost:3000/api/auth/login", user);
             console.log(res.data);
             dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
             navigate("/exam", { replace: true });

@@ -14,9 +14,49 @@
 
 .alert-timestamp {
     font-size: 12px;
-    color: #888;
+    color: #000;
 }
 
 .alert-content {
     margin-top: 8px;
+}
+
+.content-container {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+/* Add this to your existing alert.css file */
+
+.confirmation-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: gray;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.confirmation-popup p {
+    margin-bottom: 16px;
+}
+
+.confirmation-popup button {
+    margin-right: 8px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.confirmation-popup button:last-child {
+    background-color: #dc3545;
 }
